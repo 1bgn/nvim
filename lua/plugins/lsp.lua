@@ -1,4 +1,3 @@
--- ~/.config/nvim/lua/plugins/lsp.lua
 return {
   {
     "neovim/nvim-lspconfig",
@@ -6,12 +5,10 @@ return {
     opts = function(_, opts)
       opts = opts or {}
       local capabilities = vim.lsp.protocol.make_client_capabilities()
-
       local ok, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
       if ok and cmp_nvim_lsp then
         capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
       end
-
       opts.capabilities = capabilities
       opts.servers = opts.servers or {}
 
@@ -42,6 +39,68 @@ return {
             },
           },
         },
+      })
+      opts.servers.tailwindcss = {
+        filetypes = { "html", "css", "javascript", "typescript", "vue" },
+        settings = {
+          tailwindCSS = {
+            includeLanguages = {
+              html = "html",
+            },
+          },
+        },
+      }
+      -- TypeScript/JavaScript (Nuxt/Vue)
+      opts.servers.ts_ls = vim.tbl_deep_extend("force", opts.servers.ts_ls or {}, {
+        filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact" },
+        settings = {
+          typescript = {
+            inlayHints = {
+              includeInlayParameterNameHints = "all",
+              includeInlayFunctionParameterTypeHints = true,
+              includeInlayVariableTypeHints = true,
+              includeInlayPropertyDeclarationTypeHints = true,
+              includeInlayFunctionLikeReturnTypeHints = true,
+            },
+          },
+          javascript = {
+            inlayHints = {
+              includeInlayParameterNameHints = "all",
+              includeInlayFunctionParameterTypeHints = true,
+              includeInlayVariableTypeHints = true,
+            },
+          },
+        },
+      })
+
+      -- Vue Language Server (обязателен для Nuxt/Vue 3)
+      opts.servers.volar = vim.tbl_deep_extend("force", opts.servers.volar or {}, {
+        filetypes = { "vue", "typescript", "javascript" },
+        init_options = {
+          vue = { hybridMode = true }, -- Hybrid Mode: volar для .vue, ts_ls для .ts/.js
+        },
+      })
+
+      -- ESLint LSP
+      opts.servers.eslint = vim.tbl_deep_extend("force", opts.servers.eslint or {}, {
+        filetypes = {
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact",
+          "vue",
+        },
+        settings = {
+          workingDirectory = { mode = "auto" },
+          format = true,
+        },
+        on_attach = function(_, bufnr)
+          -- Автоисправление ESLint при сохранении
+          vim.api.nvim_create_autocmd("BufWritePre", {
+            buffer = bufnr,
+            command = "EslintFixAll",
+          })
+        end,
       })
 
       opts.servers.rust_analyzer = opts.servers.rust_analyzer or {}

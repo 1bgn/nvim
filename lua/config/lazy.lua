@@ -20,7 +20,6 @@ require("lazy").setup({
     { "LazyVim/LazyVim", import = "lazyvim.plugins" },
 
     -- твои extras (оставил только то, что ты реально используешь)
-    { import = "lazyvim.plugins.extras.coding.mini-surround" },
     -- если хочешь snacks picker/explorer — включай через :LazyExtras (рекомендуемый путь),
     -- но можно и тут импортом; я оставляю управление через :LazyExtras.
 

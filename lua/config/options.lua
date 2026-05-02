@@ -5,3 +5,8 @@
 vim.g.lazyvim_picker = "auto"
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
+vim.opt.langmap = table.concat({
+  "ФИСВУАПРШОЛДЬТЩЗЙКЫЕГМЦЧНЯ;ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+  "фисвуапршолдьтщзйкыегмцчня;abcdefghijklmnopqrstuvwxyz",
+}, ",")
+-- ~/.config/nvim/lua/config/keymaps.lua (или где у тебя keymaps)

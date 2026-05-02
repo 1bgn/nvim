@@ -34,12 +34,6 @@ vim.keymap.set("n", "<leader>/", function()
   vim.notify("ripgrep (rg) not found; used vimgrep fallback.\n" .. deps.install_hint({ "rg" }), vim.log.levels.WARN)
 end, { desc = "Search in project" })
 
--- Visual surround: оставил твою идею, но убрал странный buffer-local remap ')'
--- (mini.surround и так спросит символы, лишний remap может неожиданно ломать ввод)
-vim.keymap.set("x", "S", function()
-  require("mini.surround").add("visual")
-end, { silent = true, desc = "Surround (visual)" })
-
 -- Flutter helpers (как было)
 vim.keymap.set("n", "<leader>fq", ":FlutterQuickRun<CR>", { desc = "Flutter Quick Run" })
 vim.keymap.set("n", "<leader>fQ", ":FlutterQuickRestart<CR>", { desc = "Flutter Restart" })
