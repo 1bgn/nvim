@@ -135,7 +135,8 @@ return {
         end,
       })
 
-      opts.servers.dartls = opts.servers.dartls or {}
+      -- dartls управляется flutter-tools, не регистрируем его отдельно
+      opts.servers.dartls = { mason = false, autostart = false }
 
       return opts
     end,

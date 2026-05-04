@@ -16,7 +16,6 @@ return {
             args = { "--no-capture" },
           }),
           require("neotest-python")({
-            dap = { justMyCode = false },
             runner = "pytest",
             python = function()
               local cwd = vim.fn.getcwd()
@@ -41,7 +40,6 @@ return {
       vim.keymap.set("n", "<leader>ts", nt.summary.toggle, { desc = "Test: summary" })
       vim.keymap.set("n", "<leader>to", function() nt.output.open({ enter = true }) end, { desc = "Test: output" })
       vim.keymap.set("n", "<leader>tl", nt.run.run_last, { desc = "Test: run last" })
-      vim.keymap.set("n", "<leader>td", function() nt.run.run({ strategy = "dap" }) end, { desc = "Test: debug nearest" })
     end,
   },
 }

@@ -1,18 +1,25 @@
 -- ~/.config/nvim/lua/config/keymaps.lua
 local deps = require("utils.deps")
 
--- Удобный терминал (через Snacks.terminal, раз ты используешь snacks)
+-- Терминал рядом с Flutter консолью (справа от неё на том же уровне)
 vim.keymap.set("n", "<leader>ft", function()
-  local ok, _ = pcall(require, "snacks")
-  if not ok then
-    vim.notify("Snacks not available (disable snacks extras or enable them in :LazyExtras)", vim.log.levels.WARN)
-    return
+  local flutter_win = nil
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local buf = vim.api.nvim_win_get_buf(win)
+    if vim.api.nvim_buf_get_name(buf):match("__FLUTTER_DEV_LOG__") then
+      flutter_win = win
+      break
+    end
   end
-  Snacks.terminal(nil, {
-    cwd = LazyVim.root(),
-    win = { position = "bottom", height = 14 },
-  })
-end, { desc = "Terminal (Root Dir, fixed height)" })
+
+  if flutter_win then
+    vim.api.nvim_set_current_win(flutter_win)
+    vim.cmd("vsplit | terminal")
+    vim.cmd("startinsert")
+  else
+    Snacks.terminal(nil, { cwd = LazyVim.root(), win = { position = "bottom", height = 14 } })
+  end
+end, { desc = "Terminal beside Flutter log" })
 
 -- Проектный grep без падений
 vim.keymap.set("n", "<leader>/", function()
@@ -42,4 +49,20 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+vim.keymap.set({ "n", "t" }, "<c-/>", function()
+  Snacks.terminal(nil, { cwd = LazyVim.root(), win = { position = "float" } })
+end, { desc = "Floating terminal" })
+
+vim.keymap.set("t", "<Esc>", function()
+  local config = vim.api.nvim_win_get_config(0)
+  if config.relative ~= "" then
+    vim.cmd("close")
+  else
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-\\><C-n>", true, false, true), "n", false)
+  end
+end, { desc = "Exit terminal mode / close float" })
+
 vim.keymap.set("i", "jk", "<Esc>", { desc = "Exit insert mode", noremap = true })
+
+-- Сигнатура функции только по требованию
+vim.keymap.set("i", "<C-k>", vim.lsp.buf.signature_help, { desc = "Signature help" })

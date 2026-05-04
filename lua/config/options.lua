@@ -9,4 +9,3 @@ vim.opt.langmap = table.concat({
   "ФИСВУАПРШОЛДЬТЩЗЙКЫЕГМЦЧНЯ;ABCDEFGHIJKLMNOPQRSTUVWXYZ",
   "фисвуапршолдьтщзйкыегмцчня;abcdefghijklmnopqrstuvwxyz",
 }, ",")
--- ~/.config/nvim/lua/config/keymaps.lua (или где у тебя keymaps)
