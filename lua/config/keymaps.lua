@@ -34,9 +34,12 @@ vim.keymap.set("n", "<leader>/", function()
   vim.notify("ripgrep (rg) not found; used vimgrep fallback.\n" .. deps.install_hint({ "rg" }), vim.log.levels.WARN)
 end, { desc = "Search in project" })
 
--- Flutter helpers (как было)
-vim.keymap.set("n", "<leader>fq", ":FlutterQuickRun<CR>", { desc = "Flutter Quick Run" })
-vim.keymap.set("n", "<leader>fQ", ":FlutterQuickRestart<CR>", { desc = "Flutter Restart" })
-vim.keymap.set("n", "<leader>fp", ":FlutterPubGet<CR>", { desc = "Flutter pub get" })
+-- Flutter pub get (только в dart файлах чтобы не конфликтовать с LazyVim)
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "dart",
+  callback = function(ev)
+    vim.keymap.set("n", "<leader>Fp", ":FlutterPubGet<CR>", { buffer = ev.buf, desc = "Flutter: pub get" })
+  end,
+})
 
 vim.keymap.set("i", "jk", "<Esc>", { desc = "Exit insert mode", noremap = true })

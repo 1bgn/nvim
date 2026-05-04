@@ -103,7 +103,38 @@ return {
         end,
       })
 
-      opts.servers.rust_analyzer = opts.servers.rust_analyzer or {}
+      opts.servers.rust_analyzer = vim.tbl_deep_extend("force", opts.servers.rust_analyzer or {}, {
+        settings = {
+          ["rust-analyzer"] = {
+            checkOnSave = { command = "clippy" },
+            completion = {
+              callable = { snippets = "none" },
+            },
+            inlayHints = {
+              bindingModeHints = { enable = true },
+              chainingHints = { enable = true },
+              closureReturnTypeHints = { enable = "always" },
+              lifetimeElisionHints = { enable = "skip_trivial" },
+              typeHints = { enable = true },
+              parameterHints = { enable = true },
+            },
+            procMacro = { enable = true },
+            cargo = { allFeatures = true, loadOutDirsFromCheck = true },
+            diagnostics = { enable = true, experimental = { enable = true } },
+          },
+        },
+      })
+
+      opts.servers.ruff = vim.tbl_deep_extend("force", opts.servers.ruff or {}, {
+        init_options = {
+          settings = { lineLength = 100 },
+        },
+        on_attach = function(client, _)
+          -- pyright занимается hover, ruff — lint
+          client.server_capabilities.hoverProvider = false
+        end,
+      })
+
       opts.servers.dartls = opts.servers.dartls or {}
 
       return opts

@@ -12,10 +12,48 @@ return {
       local dap = require("dap")
       local dapui = require("dapui")
 
-      dapui.setup()
+      dapui.setup({
+        layouts = {
+          {
+            -- layout 1: минимальный для Flutter — только консоль + кнопки
+            elements = { { id = "console", size = 1.0 } },
+            size = 8,
+            position = "bottom",
+          },
+          {
+            -- layout 2: боковая панель для Rust/Python
+            elements = {
+              { id = "scopes",      size = 0.4 },
+              { id = "breakpoints", size = 0.2 },
+              { id = "stacks",      size = 0.2 },
+              { id = "watches",     size = 0.2 },
+            },
+            size = 40,
+            position = "left",
+          },
+          {
+            -- layout 3: нижняя панель для Rust/Python
+            elements = {
+              { id = "repl",    size = 0.5 },
+              { id = "console", size = 0.5 },
+            },
+            size = 10,
+            position = "bottom",
+          },
+        },
+        controls = {
+          enabled = true,
+          element = "console",  -- кнопки рисуются поверх консоли
+        },
+      })
 
-      dap.listeners.after.event_initialized["dapui_config"] = function()
-        dapui.open()
+      dap.listeners.after.event_initialized["dapui_config"] = function(session)
+        if session.config.type == "dart" then
+          dapui.open({ layout = 1 })   -- Flutter: только консоль + кнопки снизу
+        else
+          dapui.open({ layout = 2 })   -- Rust/Python: боковая панель
+          dapui.open({ layout = 3 })   -- + нижняя консоль
+        end
       end
       dap.listeners.before.event_terminated["dapui_config"] = function()
         dapui.close()
@@ -23,6 +61,42 @@ return {
       dap.listeners.before.event_exited["dapui_config"] = function()
         dapui.close()
       end
+
+      -- Rust: codelldb (mason install: codelldb)
+      dap.adapters.codelldb = {
+        type = "server",
+        port = "${port}",
+        executable = {
+          command = vim.fn.exepath("codelldb"),
+          args = { "--port", "${port}" },
+        },
+      }
+      dap.configurations.rust = {
+        {
+          name = "Launch binary",
+          type = "codelldb",
+          request = "launch",
+          program = function()
+            return vim.fn.input("Binary: ", vim.fn.getcwd() .. "/target/debug/", "file")
+          end,
+          cwd = "${workspaceFolder}",
+          stopOnEntry = false,
+        },
+        {
+          name = "Launch binary (with args)",
+          type = "codelldb",
+          request = "launch",
+          program = function()
+            return vim.fn.input("Binary: ", vim.fn.getcwd() .. "/target/debug/", "file")
+          end,
+          args = function()
+            local args = vim.fn.input("Args: ")
+            return vim.split(args, " ", { trimempty = true })
+          end,
+          cwd = "${workspaceFolder}",
+          stopOnEntry = false,
+        },
+      }
 
       dap.adapters.dart = {
         type = "executable",

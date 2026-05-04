@@ -58,9 +58,9 @@ return {
       vim.api.nvim_create_autocmd("BufWritePost", {
         pattern = "*.dart",
         callback = function()
-          if _G.flutterTerm and _G.flutterTerm.is_open and _G.flutterTerm:is_open() then
+          local ok, _ = pcall(vim.cmd, "FlutterReload")
+          if not ok and _G.flutterTerm and _G.flutterTerm:is_open() then
             _G.flutterTerm:send("r\n")
-            vim.notify("Hot reload sent to Flutter", vim.log.levels.INFO)
           end
         end,
       })
